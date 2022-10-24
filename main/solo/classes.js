@@ -22,14 +22,46 @@ class Player {
         this.velocity = velocity
         this.width = 50
         this.height = 35
+        this.points = []
     }
 
-    coord_check() {
-        if (this.position.y + this.height >= canvas.height - 8 ){
-            this.velocity.y = 0
+    inputHandlerUp(x) {
+        switch (x) {
+            case 'w':
+                player.velocity.m = 0
+                break
+            case 'd':
+                player.angle.alpha = player.angle.alpha
+                break
+            case 'a':
+                player.angle.alpha = player.angle.alpha
+                break
+            case 's':
+                player.velocity.m = 0
+                break
         }
-        if (this.position.x + this.width >= canvas.width - 8){
-            this.velocity.x = 0
+    }
+
+    inputHandlerDown(x) {
+        switch (x) {
+            case 'w':
+                player.velocity.m = 2
+                break
+            case 'd':
+                if (this.collision_checker(this.points)) {
+                    break
+                }
+                player.angle.alpha += 3
+                break
+            case 'a':
+                if (this.collision_checker(this.points)) {
+                    break
+                }
+                player.angle.alpha -= 3
+                break
+            case 's':
+                player.velocity.m = -2
+                break
         }
     }
 
@@ -50,10 +82,10 @@ class Player {
 
     collision() {
 
-        let x1 = this.position.x
-        let y1 = this.position.y
+        let x = this.position.x
+        let y = this.position.y
 
-        let p1 = {x1, y1}
+        let p1 = {x, y}
 
         let newx = this.width
         let newy = this.height
@@ -79,22 +111,39 @@ class Player {
         p4.y += this.position.y
 
         let points = [p1, p2, p3, p4]
-        console.log(points)
+        console.log(points[0])
         return points
     }
 
+    collision_checker(points) {
+        for (let i = 0; i < points.length; ++i) {
+            if (points[i].x >= canvas.width - 8 || points[i].y >= canvas.height - 10) {
+                this.position.x = this.position.x - 2
+                this.position.y = this.position.y - 2
+                return true
+            }
+            else if (points[i].x <= 12 || points[i].y <= 10 ){
+                this.position.x = this.position.x + 2
+                this.position.y = this.position.y + 2
+                return true
+            }
+        }
+    }
+
     update() {
+        console.log(player.angle.alpha)
+        if (this.angle.alpha >= 361) {
+            this.angle.alpha = 1
+        }
+        else if (this.angle.alpha <= -1) {
+            this.angle.alpha = 359
+        }
         this.draw()
-        let points = this.collision()
+        this.points = this.collision()
         this.velocity.y = this.velocity.m * Math.abs(Math.cos((90-this.angle.alpha)*(Math.PI/180)))
         this.velocity.x = this.velocity.m * Math.abs(Math.cos(this.angle.alpha*(Math.PI/180)))
 
-        for (let i = 0; i < points.length; ++i) {
-            if (points[i].x >= canvas.width - 8 || points[i].x <= 10 || points[i].y >= canvas.height - 10 || points[i].y <= 8 ) {
-                this.velocity.y = 0
-                this.velocity.x = 0
-            }
-        }
+        this.collision_checker(this.points)
 
         if(this.angle.alpha <= 90 && this.angle.alpha > 0){
             this.position.y += this.velocity.y

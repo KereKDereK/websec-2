@@ -7,10 +7,10 @@ const player = new Player({
         y: 300
     },
     angle: {
-        alpha: 225
+        alpha: 0
     },
     velocity: {
-        m: 3,
+        m: 0,
         x: 0,
         y: 0
     }
@@ -30,3 +30,11 @@ function animate() {
     player.update()
 }
 animate()
+
+window.addEventListener('keydown', (event) => {
+    player.inputHandlerDown(event.key)
+})
+
+window.addEventListener('keyup', (event) => {
+    player.inputHandlerUp(event.key)
+})
