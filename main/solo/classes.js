@@ -42,53 +42,59 @@ class Player {
         c.restore()
     }
 
-    draw_collision() {
-        
+    point_rotation(x_old, y_old) {
+        let x = x_old * Math.cos(this.angle.alpha* (Math.PI/180)) - y_old * Math.sin(this.angle.alpha* (Math.PI/180))
+        let y = x_old * Math.sin(this.angle.alpha* (Math.PI/180)) + y_old * Math.cos(this.angle.alpha* (Math.PI/180))
+        return {x, y}
+    }
+
+    collision() {
+
+        let x1 = this.position.x
+        let y1 = this.position.y
+
+        let p1 = {x1, y1}
 
         let newx = this.width
         let newy = this.height
 
-        let x1_col = newx * Math.cos(this.angle.alpha* (Math.PI/180)) - newy * Math.sin(this.angle.alpha* (Math.PI/180))
-        let y1_col = newx * Math.sin(this.angle.alpha* (Math.PI/180)) + newy * Math.cos(this.angle.alpha* (Math.PI/180))
+        let p2 = this.point_rotation(newx, newy)
 
-        x1_col += this.position.x
-        y1_col += this.position.y
-
-        c.moveTo(this.position.x, this.position.y)
-        c.lineTo(x1_col, y1_col);
-        c.stroke();
+        p2.x += this.position.x
+        p2.y += this.position.y
 
         newy = 0
 
-        x1_col = newx * Math.cos(this.angle.alpha* (Math.PI/180)) - newy * Math.sin(this.angle.alpha* (Math.PI/180))
-        y1_col = newx * Math.sin(this.angle.alpha* (Math.PI/180)) + newy * Math.cos(this.angle.alpha* (Math.PI/180))
+        let p3 = this.point_rotation(newx, newy)
 
-        x1_col += this.position.x
-        y1_col += this.position.y
-
-        c.moveTo(this.position.x, this.position.y)
-        c.lineTo(x1_col, y1_col);
-        c.stroke();
+        p3.x += this.position.x
+        p3.y += this.position.y
 
         newx = 0
         newy = this.height
 
-        let x2_col = newx * Math.cos(this.angle.alpha* (Math.PI/180)) - newy * Math.sin(this.angle.alpha* (Math.PI/180))
-        let y2_col = newx * Math.sin(this.angle.alpha* (Math.PI/180)) + newy * Math.cos(this.angle.alpha* (Math.PI/180))
+        let p4 = this.point_rotation(newx, newy)
 
-        x2_col += this.position.x
-        y2_col += this.position.y
+        p4.x += this.position.x
+        p4.y += this.position.y
 
-        c.moveTo(x2_col, y2_col)
-        c.lineTo(x1_col, y1_col);
-        c.stroke();
+        let points = [p1, p2, p3, p4]
+        console.log(points)
+        return points
     }
 
     update() {
         this.draw()
-        this.draw_collision()
+        let points = this.collision()
         this.velocity.y = this.velocity.m * Math.abs(Math.cos((90-this.angle.alpha)*(Math.PI/180)))
         this.velocity.x = this.velocity.m * Math.abs(Math.cos(this.angle.alpha*(Math.PI/180)))
+
+        for (let i = 0; i < points.length; ++i) {
+            if (points[i].x >= canvas.width - 8 || points[i].x <= 10 || points[i].y >= canvas.height - 10 || points[i].y <= 8 ) {
+                this.velocity.y = 0
+                this.velocity.x = 0
+            }
+        }
 
         if(this.angle.alpha <= 90 && this.angle.alpha > 0){
             this.position.y += this.velocity.y

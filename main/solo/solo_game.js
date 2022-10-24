@@ -7,10 +7,10 @@ const player = new Player({
         y: 300
     },
     angle: {
-        alpha: 30
+        alpha: 225
     },
     velocity: {
-        m: 0,
+        m: 3,
         x: 0,
         y: 0
     }
