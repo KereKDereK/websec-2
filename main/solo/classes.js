@@ -42,9 +42,51 @@ class Player {
         c.restore()
     }
 
+    draw_collision() {
+        
+
+        let newx = this.width
+        let newy = this.height
+
+        let x1_col = newx * Math.cos(this.angle.alpha* (Math.PI/180)) - newy * Math.sin(this.angle.alpha* (Math.PI/180))
+        let y1_col = newx * Math.sin(this.angle.alpha* (Math.PI/180)) + newy * Math.cos(this.angle.alpha* (Math.PI/180))
+
+        x1_col += this.position.x
+        y1_col += this.position.y
+
+        c.moveTo(this.position.x, this.position.y)
+        c.lineTo(x1_col, y1_col);
+        c.stroke();
+
+        newy = 0
+
+        x1_col = newx * Math.cos(this.angle.alpha* (Math.PI/180)) - newy * Math.sin(this.angle.alpha* (Math.PI/180))
+        y1_col = newx * Math.sin(this.angle.alpha* (Math.PI/180)) + newy * Math.cos(this.angle.alpha* (Math.PI/180))
+
+        x1_col += this.position.x
+        y1_col += this.position.y
+
+        c.moveTo(this.position.x, this.position.y)
+        c.lineTo(x1_col, y1_col);
+        c.stroke();
+
+        newx = 0
+        newy = this.height
+
+        let x2_col = newx * Math.cos(this.angle.alpha* (Math.PI/180)) - newy * Math.sin(this.angle.alpha* (Math.PI/180))
+        let y2_col = newx * Math.sin(this.angle.alpha* (Math.PI/180)) + newy * Math.cos(this.angle.alpha* (Math.PI/180))
+
+        x2_col += this.position.x
+        y2_col += this.position.y
+
+        c.moveTo(x2_col, y2_col)
+        c.lineTo(x1_col, y1_col);
+        c.stroke();
+    }
+
     update() {
         this.draw()
-        
+        this.draw_collision()
         this.velocity.y = this.velocity.m * Math.abs(Math.cos((90-this.angle.alpha)*(Math.PI/180)))
         this.velocity.x = this.velocity.m * Math.abs(Math.cos(this.angle.alpha*(Math.PI/180)))
 
