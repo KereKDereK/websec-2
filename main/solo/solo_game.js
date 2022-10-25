@@ -32,9 +32,9 @@ function animate() {
 animate()
 
 window.addEventListener('keydown', (event) => {
-    player.inputHandlerDown(event.key, 1)
+    player.inputHandler(event.key, 1)
 })
 
 window.addEventListener('keyup', (event) => {
-    player.inputHandlerUp(event.key, 0)
+    player.inputHandler(event.key, 0)
 })

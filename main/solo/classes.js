@@ -20,26 +20,57 @@ class Player {
         this.position = position
         this.angle = angle
         this.velocity = velocity
-        this.width = 50
-        this.height = 35
+        this.width = 25
+        this.height = 15
+        this.key = [0,0,0,0]
         this.points = []
     }
 
-    inputHandlerUp(x) {
+    inputHandler(x, to) {
         switch (x) {
             case 'w':
-                player.velocity.m = 0
+                this.key[0] = to
                 break
             case 'd':
-                player.angle.alpha = player.angle.alpha
+                this.key[1] = to
                 break
             case 'a':
-                player.angle.alpha = player.angle.alpha
+                this.key[2] = to
                 break
             case 's':
-                player.velocity.m = 0
+                this.key[3] = to
                 break
         }
+    }
+
+    movement() {
+        if (this.key[0] == 1){
+            this.velocity.m += 0.3
+        }
+        else {
+            this.slowdown()
+        }
+
+        if (this.key[3] == 1){
+            this.velocity.m -= 0.3
+        }
+        else {
+            this.slowdown()
+        }
+
+        if (this.key[1] == 1){
+            this.angle.alpha += 3
+        }
+
+        if (this.key[2] == 1){
+            this.angle.alpha -= 3
+        }
+
+
+    }
+
+    slowdown() {
+        this.velocity.m *= 0.95
     }
 
     inputHandlerDown(x) {
@@ -70,7 +101,7 @@ class Player {
         c.fillStyle = 'red'
         c.translate(this.position.x, this.position.y)
         c.rotate(this.angle.alpha * (Math.PI/180))
-        c.fillRect(0, -this.height/2, 50, 35)
+        c.fillRect(0, -this.height/2, this.width, this.height)
         c.restore()
     }
 
@@ -83,7 +114,7 @@ class Player {
     collision() {
 
         let x = this.position.x
-        let y = this.position.y - this.height/2
+        let y = this.position.y
 
         let p1 = {x, y}
 
@@ -103,7 +134,7 @@ class Player {
         p3.y += this.position.y
 
         newx = 0
-        newy = this.height/2
+        newy = 0
 
         let p4 = this.point_rotation(newx, newy)
 
@@ -130,21 +161,7 @@ class Player {
         }
     }
 
-    update() {
-        console.log(player.angle.alpha)
-        if (this.angle.alpha >= 361) {
-            this.angle.alpha = 1
-        }
-        else if (this.angle.alpha <= -1) {
-            this.angle.alpha = 359
-        }
-        this.draw()
-        this.points = this.collision()
-        this.velocity.y = this.velocity.m * Math.abs(Math.cos((90-this.angle.alpha)*(Math.PI/180)))
-        this.velocity.x = this.velocity.m * Math.abs(Math.cos(this.angle.alpha*(Math.PI/180)))
-
-        this.collision_checker(this.points)
-
+    axis_corel() {
         if(this.angle.alpha <= 90 && this.angle.alpha > 0){
             this.position.y += this.velocity.y
             this.position.x += this.velocity.x
@@ -161,5 +178,30 @@ class Player {
             this.position.y -= this.velocity.y
             this.position.x += this.velocity.x
         }
+    }
+
+    angle_loop() {
+        if (this.angle.alpha >= 361) {
+            this.angle.alpha = 1
+        }
+        else if (this.angle.alpha <= -1) {
+            this.angle.alpha = 359
+        }
+    }
+
+    velocity_corel() {
+        this.velocity.y = this.velocity.m * Math.abs(Math.cos((90-this.angle.alpha)*(Math.PI/180)))
+        this.velocity.x = this.velocity.m * Math.abs(Math.cos(this.angle.alpha*(Math.PI/180)))
+    }
+
+    update() {
+        console.log(this.key)
+        this.angle_loop()
+        this.draw()
+        this.movement()
+        this.points = this.collision()
+        this.velocity_corel()
+        this.collision_checker(this.points)
+        this.axis_corel()
     }
 }
