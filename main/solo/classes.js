@@ -70,7 +70,7 @@ class Player {
         c.fillStyle = 'red'
         c.translate(this.position.x, this.position.y)
         c.rotate(this.angle.alpha * (Math.PI/180))
-        c.fillRect(0, 0, 50, 35)
+        c.fillRect(0, -this.height/2, 50, 35)
         c.restore()
     }
 
@@ -83,19 +83,19 @@ class Player {
     collision() {
 
         let x = this.position.x
-        let y = this.position.y
+        let y = this.position.y - this.height/2
 
         let p1 = {x, y}
 
         let newx = this.width
-        let newy = this.height
+        let newy = this.height/2
 
         let p2 = this.point_rotation(newx, newy)
 
         p2.x += this.position.x
         p2.y += this.position.y
 
-        newy = 0
+        newy = -this.height/2
 
         let p3 = this.point_rotation(newx, newy)
 
@@ -103,7 +103,7 @@ class Player {
         p3.y += this.position.y
 
         newx = 0
-        newy = this.height
+        newy = this.height/2
 
         let p4 = this.point_rotation(newx, newy)
 
