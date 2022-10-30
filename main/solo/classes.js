@@ -25,11 +25,32 @@ class Player {
         this.key = [0,0,0,0]
         this.points = []
         this.id = 1
+        this.score = 0
     }
+
+    ouchHandler(e) {
+        if (e == this.id) {
+        this.velocity.m = -this.velocity.m
+        }
+    }
+
+    collisionHandler(e, eid) {
+        for (let i = 0; i < e.length; ++i){
+        if (e[i].x >= this.points[i].x - 3 && e[i].x <= this.points[i].x + 3 && e[i].y >= this.points[i].y - 3 && e[i].y <= this.points[i].y + 3){
+            this.velocity.m = -this.velocity.m
+            window.dispatchEvent(new CustomEvent('ouch', {
+                detail: {
+                    id: eid
+                }
+            }))
+        }
+    }
+}
 
     eventHandler(e) {
         if (e == this.id) {
-            console.log('ura, pobeda')
+            console.log(this.score)
+            ++this.score
         }
     }
 
@@ -131,15 +152,23 @@ class Player {
 
     collision_checker(points) {
         for (let i = 0; i < points.length; ++i) {
-            if (points[i].x >= canvas.width - 8 || points[i].y >= canvas.height - 10) {
+            if (points[i].x >= canvas.width - 8) {
                 this.velocity.m = 0
                 this.position.x = this.position.x - 2
+                return true
+            }
+            else if (points[i].y >= canvas.height - 10) {
+                this.velocity.m = 0
                 this.position.y = this.position.y - 2
                 return true
             }
-            else if (points[i].x <= 12 || points[i].y <= 10 ){
+            else if (points[i].x <= 12) {
                 this.velocity.m = 0
                 this.position.x = this.position.x + 2
+                return true
+            }
+            else if (points[i].y <= 5) {
+                this.velocity.m = 0
                 this.position.y = this.position.y + 2
                 return true
             }
@@ -235,7 +264,7 @@ class Star {
 }
 
 class Dummy {
-    constructor({position, angle, velocity}) {
+    constructor({position, angle, velocity}, id) {
         this.position = position
         this.angle = angle
         this.velocity = velocity
@@ -243,6 +272,54 @@ class Dummy {
         this.height = 15
         this.key = [0,0,0,0]
         this.points = []
+        this.ai = []
+        this.ip = id
+        this.score = 0
+    }
+
+    ouchHandler(e) {
+        if (e == this.id) {
+        this.velocity.m = -this.velocity.m
+        }
+    }
+
+    collisionHandler(e, eid) {
+        for (let i = 0; i < e.length; ++i){
+        for (let j = 0; j < e.length; ++j){
+        if (e[j].x >= this.points[i].x - 10 && e[j].x <= this.points[i].x+ 10 && e[j].y >= this.points[i].y - 10 && e[j].y <= this.points[i].y + 10){
+            this.velocity.m = -this.velocity.m
+            window.dispatchEvent(new CustomEvent('ouch', {
+                detail: {
+                    id: eid
+                }
+            }))
+        }
+    }
+    }
+}
+    
+
+    eventHandler(e) {
+        if (e == this.id) {
+            ++this.score
+        }
+    }
+
+    inputHandler(x, to) {
+        switch (x) {
+            case 'w':
+                this.key[0] = to
+                break
+            case 'd':
+                this.key[1] = to
+                break
+            case 'a':
+                this.key[2] = to
+                break
+            case 's':
+                this.key[3] = to
+                break
+        }
     }
 
     movement() {
@@ -292,6 +369,7 @@ class Dummy {
 
     collision() {
 
+        
         let x = this.position.x
         let y = this.position.y
 
@@ -319,22 +397,30 @@ class Dummy {
 
         p4.x += this.position.x
         p4.y += this.position.y
-
+        this.ai = [[p1.x, p1.y], [p2.x, p2.y], [p3.x, p3.y], [p4.x, p4.y]]
         let points = [p1, p2, p3, p4]
         return points
     }
 
     collision_checker(points) {
         for (let i = 0; i < points.length; ++i) {
-            if (points[i].x >= canvas.width - 8 || points[i].y >= canvas.height - 10) {
+            if (points[i].x >= canvas.width - 8) {
                 this.velocity.m = 0
                 this.position.x = this.position.x - 2
+                return true
+            }
+            else if (points[i].y >= canvas.height - 10) {
+                this.velocity.m = 0
                 this.position.y = this.position.y - 2
                 return true
             }
-            else if (points[i].x <= 12 || points[i].y <= 10 ){
+            else if (points[i].x <= 12) {
                 this.velocity.m = 0
                 this.position.x = this.position.x + 2
+                return true
+            }
+            else if (points[i].y <= 5) {
+                this.velocity.m = 0
                 this.position.y = this.position.y + 2
                 return true
             }
@@ -382,5 +468,11 @@ class Dummy {
         this.velocity_corel()
         this.collision_checker(this.points)
         this.axis_corel()
+        window.dispatchEvent(new CustomEvent('my_points', {
+            detail: {
+                points: this.points,
+                id: this.id
+            }
+        }))
     }
 }
