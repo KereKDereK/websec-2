@@ -16,16 +16,18 @@ class Sprite {
 }
 
 class Player {
-    constructor({position, angle, velocity}) {
+    constructor({position, angle, velocity}, imageSrc) {
         this.position = position
         this.angle = angle
         this.velocity = velocity
         this.width = 25
-        this.height = 15
+        this.height = 16
         this.key = [0,0,0,0]
         this.points = []
         this.id = 1
         this.score = 0
+        this.image = new Image()
+        this.image.src = imageSrc
     }
 
     ouchHandler(e) {
@@ -106,7 +108,7 @@ class Player {
         c.fillStyle = 'red'
         c.translate(this.position.x, this.position.y)
         c.rotate(this.angle.alpha * (Math.PI/180))
-        c.fillRect(0, -this.height/2, this.width, this.height)
+        c.drawImage(this.image, 0, -this.height/2)
         c.restore()
     }
 
@@ -264,17 +266,19 @@ class Star {
 }
 
 class Dummy {
-    constructor({position, angle, velocity}, id) {
+    constructor({position, angle, velocity}, id, imageSrc) {
         this.position = position
         this.angle = angle
         this.velocity = velocity
         this.width = 25
-        this.height = 15
+        this.height = 16
         this.key = [0,0,0,0]
         this.points = []
         this.ai = []
         this.ip = id
         this.score = 0
+        this.image = new Image()
+        this.image.src = imageSrc
     }
 
     ouchHandler(e) {
@@ -354,10 +358,9 @@ class Dummy {
 
     draw() {
         c.save();
-        c.fillStyle = 'red'
         c.translate(this.position.x, this.position.y)
         c.rotate(this.angle.alpha * (Math.PI/180))
-        c.fillRect(0, -this.height/2, this.width, this.height)
+        c.drawImage(this.image, 0, -this.height/2)
         c.restore()
     }
 

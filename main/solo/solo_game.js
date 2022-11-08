@@ -42,7 +42,7 @@ const player = new Player({
         x: 0,
         y: 0
     }
-})
+}, "../../assets/car_1.png")
 
 const dummy = new Dummy({
     position:{
@@ -57,7 +57,7 @@ const dummy = new Dummy({
         x: 0,
         y: 0
     }
-}, 2)
+}, 2, "../../assets/car_2.png")
 
 const dummy2 = new Dummy({
     position:{
@@ -72,7 +72,7 @@ const dummy2 = new Dummy({
         x: 0,
         y: 0
     }
-}, 3)
+}, 3, "../../assets/car_3.png")
 
 const dummy3 = new Dummy({
     position:{
@@ -87,7 +87,7 @@ const dummy3 = new Dummy({
         x: 0,
         y: 0
     }
-}, 4)
+}, 4, "../../assets/car_4.png")
 
 const background = new Sprite({
     position: {
