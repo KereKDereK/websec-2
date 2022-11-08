@@ -123,8 +123,15 @@ socket.on('redraw', (data)=>{
     draw++;
   });
   arr.sort(byField('score'));
-  for (let i = 1; i <= players.length; ++i){
-        divs[i].innerHTML = `${i}. ${arr[i-1].name} ${arr[i-1].score}`
+  console.log(divs.length)
+  for (let i = 1; i <= divs.length-1; ++i){
+        if (i > players.length) {
+            divs[i].style.display = 'none'
+        }
+        else{
+            divs[i].style.display = 'block'
+            divs[i].innerHTML = `${i}. ${arr[i-1].name} ${arr[i-1].score}`
+        }
   }
   const coin = data[1]
   ctx.drawImage(coinImage, coin.x, coin.y, widthCoin, heightCoin);
