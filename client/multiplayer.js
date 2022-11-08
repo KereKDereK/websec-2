@@ -1,6 +1,12 @@
+function byField(field) {
+    return (a, b) => a[field] > b[field] ? -1 : 1;
+  }
+
 let button = document.querySelector('#button');
 let devError = document.querySelector('#error');
 let devLogin = document.querySelector('#devLogin');
+let leaderboard = document.querySelector('#leaderboard')
+let divs = document.getElementsByClassName('menu-item')
 
 const widthCar = 25;
 const heightCar = 16;
@@ -23,6 +29,7 @@ button.onclick = () =>{
         console.log("successful");
         devLogin.remove();
         document.body.appendChild(canvas);
+        leaderboard.style.display = 'block'
         setInterval(()=>{socket.emit('key', key)}, 10);
     })
 }
@@ -36,7 +43,11 @@ let canvas = document.createElement("canvas");
 let ctx = canvas.getContext("2d");
 canvas.width = 600;
 canvas.height = 600;
-canvas.style.display = "block";
+canvas.style.position = "absolute"
+canvas.style.top = "50%"
+canvas.style.left = "50%"
+canvas.style.marginRight = "-50%"
+canvas.style.transform = "translate(-50%, -50%)"
 canvas.style.background = "white";
 canvas.style.margin = "0 auto"
 
@@ -49,7 +60,6 @@ coinImage.src = 'assets/coin.png';
 document.addEventListener('keydown', (event) => {
   var name = event.key;
   var code = event.code;
-  console.log(code);
   switch (name) {
     case 'w':
         key[0] = 1
@@ -87,21 +97,35 @@ document.addEventListener('keyup', (event) => {
     }
 }, false);
 
+
+let draw = 1
+let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 socket.on('redraw', (data)=>{
   ctx.drawImage(background, 0, 0);
   const players = data[0]
+  draw = 1
+  arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   players.forEach(player => {
-    console.log(player.angle.alpha, player.velocity.m, player.position.x, player.position.y);
+    arr[draw-1] = {name: player.login, score: player.score}
+    Car.src = `assets/car_${draw}.png`;
     ctx.save();
+    ctx.fillStyle = "rgb(255,255,255)";
+    ctx.translate(player.position.x, player.position.y)
+    ctx.rotate(0* Math.PI/180);
+    ctx.fillText(player.login, -15, -25, 60);
+    ctx.restore()
+    ctx.save()
     ctx.fillStyle = 'red'
     ctx.translate(player.position.x, player.position.y)
     ctx.rotate(player.angle.alpha * (Math.PI/180))
     ctx.drawImage(Car, 0, -8)
-    ctx.fillStyle = "rgb(255,255,255)";
-    ctx.rotate(-90* Math.PI/180);
-    ctx.fillText(player.login, -40, -5, 60);
     ctx.restore();
+    draw++;
   });
+  arr.sort(byField('score'));
+  for (let i = 1; i <= players.length; ++i){
+        divs[i].innerHTML = `${i}. ${arr[i-1].name} ${arr[i-1].score}`
+  }
   const coin = data[1]
   ctx.drawImage(coinImage, coin.x, coin.y, widthCoin, heightCoin);
 })

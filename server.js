@@ -13,12 +13,16 @@ let canvas = {
 
 let players = [];
 
-let coin = {x: 20+540*Math.random(),
-        y: 20+540*Math.random()};
+let coin = {x: getRandomInt(500),
+        y: getRandomInt(500)};
 
 setInterval(()=>{players.forEach(player => {
   player.can_send = true;
 });}, 10);
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max + 50);
+}
 
 function point_rotation(x_old, y_old, player) {
     let x = x_old * Math.cos(player.angle.alpha* (Math.PI/180)) - y_old * Math.sin(player.angle.alpha* (Math.PI/180))
@@ -200,8 +204,8 @@ io.on('connection', (socket) => {
         if (player.points[i].x >= coin.x - 10 && player.points[i].x <= coin.x + 10 
             && player.points[i].y >= coin.y - 10 && player.points[i].y <= coin.y + 10){
                 player.score++;
-                coin.x = 20+760*Math.random();
-                coin.y = 20+560*Math.random();
+                coin.x = getRandomInt(500);
+                coin.y = getRandomInt(500);
                 console.log(player.score);
         }
     }
