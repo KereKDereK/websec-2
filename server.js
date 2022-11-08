@@ -6,39 +6,44 @@ const express = require('express'),
 const host = 'localhost';
 const port = 8080;
 
+let canvas = {
+  width: 600,
+  height: 600
+}
+
 let players = [];
 
-let coin = {x: 20+760*Math.random(),
-        y: 20+560*Math.random()};
+let coin = {x: 20+540*Math.random(),
+        y: 20+540*Math.random()};
 
 setInterval(()=>{players.forEach(player => {
   player.can_send = true;
 });}, 10);
 
-function point_rotation(x_old, y_old) {
+function point_rotation(x_old, y_old, player) {
     let x = x_old * Math.cos(player.angle.alpha* (Math.PI/180)) - y_old * Math.sin(player.angle.alpha* (Math.PI/180))
     let y = x_old * Math.sin(player.angle.alpha* (Math.PI/180)) + y_old * Math.cos(player.angle.alpha* (Math.PI/180))
     return {x, y}
 }
 
-function collision() {
+function collision(player) {
 
     let x = player.position.x
     let y = player.position.y
 
     let p1 = {x, y}
 
-    let newx = player.width
-    let newy = player.height/2
+    let newx = 25
+    let newy = 16/2
 
-    let p2 = point_rotation(newx, newy)
+    let p2 = point_rotation(newx, newy, player)
 
     p2.x += player.position.x
     p2.y += player.position.y
 
-    newy = -player.height/2
+    newy = -16/2
 
-    let p3 = point_rotation(newx, newy)
+    let p3 = point_rotation(newx, newy, player)
 
     p3.x += player.position.x
     p3.y += player.position.y
@@ -46,7 +51,7 @@ function collision() {
     newx = 0
     newy = 0
 
-    let p4 = point_rotation(newx, newy)
+    let p4 = point_rotation(newx, newy, player)
 
     p4.x += player.position.x
     p4.y += player.position.y
@@ -74,8 +79,8 @@ io.on('connection', (socket) => {
           can_send: true,
           score: 0,
           position: {
-            x: 20+760*Math.random(),
-            y: 20+560*Math.random()
+            x: 20+400*Math.random(),
+            y: 20+400*Math.random()
             },
             velocity: {
                 m: 0,
@@ -84,7 +89,9 @@ io.on('connection', (socket) => {
             },
           angle: {
             alpha: 0
-            }
+            },
+          key: [0, 0, 0, 0],
+          points: []
         });
         socket.emit("successful");
       }
@@ -110,14 +117,14 @@ io.on('connection', (socket) => {
     }
     
 
-    if (player.key[0] == 1){
+    if (keys[0] == 1){
         player.velocity.m += 0.3
     }
     else {
         player.velocity.m *= 0.93
     }
 
-    if (player.key[3] == 1){
+    if (keys[3] == 1){
         player.velocity.m -= 0.3
     }
 
@@ -125,15 +132,15 @@ io.on('connection', (socket) => {
         player.velocity.m *= 0.93
     }
 
-    if (player.key[1] == 1){
+    if (keys[1] == 1){
         player.angle.alpha += 4
     }
 
-    if (player.key[2] == 1){
+    if (keys[2] == 1){
         player.angle.alpha -= 4
     }
 
-    player.points = this.collision()
+    player.points = collision(player)
     
     player.velocity.y = player.velocity.m * Math.abs(Math.cos((90-player.angle.alpha)*(Math.PI/180)))
     player.velocity.x = player.velocity.m * Math.abs(Math.cos(player.angle.alpha*(Math.PI/180)))
@@ -179,9 +186,10 @@ io.on('connection', (socket) => {
 
     players.forEach(p => {
       if(p!==player)
-        for (let i = 0; i < e.length; ++i){
+        for (let i = 0; i < p.length; ++i){
             if (p.points[i].x >= player.points[i].x - 3 && p.points[i].x <= player.points[i].x + 3 
                 && p.points[i].y >= player.points[i].y - 3 && p.points[i].y <= player.points[i].y + 3){
+                  console.log('working')
                     p.velocity.m = -p.velocity.m
                     player.velocity.m = -player.velocity.m
             }
