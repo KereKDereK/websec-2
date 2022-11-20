@@ -248,7 +248,7 @@ class Star {
 
     eventHandler(e, id_e) {
         for (let i = 0; i < e.length; ++i){
-            if (e[i].x >= this.position.x - 10 && e[i].x <= this.position.x + 10 && e[i].y >= this.position.y - 10 && e[i].y <= this.position.y + 10){
+            if (e[i].x >= this.position.x - 3 && e[i].x <= this.position.x + 28 && e[i].y >= this.position.y - 3 && e[i].y <= this.position.y + 28){
                 window.dispatchEvent(new CustomEvent('got_it', {
                     detail: {
                         id: id_e
